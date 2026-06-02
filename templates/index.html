@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas de Retención & Riesgo Académico - Storytelling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+/* Theme Variables */
+:root {
+    --bg-color: #0b0f19;
+    --card-bg: rgba(22, 30, 49, 0.7);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-color: #f1f5f9;
+    --text-muted: #94a3b8;
+    --accent: #4f46e5;
+    --accent-hover: #6366f1;
+    
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    
+    --font-sans: 'Outfit', sans-serif;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light Theme overrides */
+body.light-theme {
+    --bg-color: #f8fafc;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(0, 0, 0, 0.06);
+    --text-color: #0f172a;
+    --text-muted: #64748b;
+    --accent: #4f46e5;
+    --accent-hover: #3730a3;
+}
+
+/* Reset and Core Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    transition: var(--transition);
+}
+
+/* Background Glowing Orbs */
+.glow-bg {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* App Container */
+.app-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    flex-grow: 1;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.logo-area h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-color) 30%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0.25rem 0;
+}
+
+.badge {
+    background: rgba(79, 70, 229, 0.2);
+    border: 1px solid rgba(79, 70, 229, 0.4);
+    color: #a5b4fc;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-block;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* Buttons */
+.btn {
+    font-family: var(--font-sans);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-secondary {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* KPI Cards Grid */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.kpi-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(79, 70, 229, 0.15);
+    border-color: rgba(79, 70, 229, 0.3);
+}
+
+.kpi-icon {
+    font-size: 2.25rem;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.kpi-info h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.kpi-info p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.kpi-card.danger .kpi-info h3 { color: var(--danger); }
+.kpi-card.warning .kpi-info h3 { color: var(--warning); }
+.kpi-card.success .kpi-info h3 { color: var(--success); }
+
+/* Layout Structure */
+.main-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Glass Card */
+.card.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.75rem;
+}
+
+/* Storytelling Node List */
+.story-node {
+    display: flex;
+    gap: 1.25rem;
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.story-node::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: var(--card-border);
+}
+
+.story-node:last-child {
+    padding-bottom: 0;
+}
+
+.story-node:last-child::after {
+    display: none;
+}
+
+.node-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--card-border);
+    border: 2px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.story-node.active .node-number {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
+}
+
+.node-body h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.node-body p, .node-body ul {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.node-body ul {
+    margin-left: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+/* Recommendations Grid */
+.recs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.rec-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.rec-item h5 {
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+    color: var(--text-color);
+}
+
+/* Tabs */
+.tab-header {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.75rem;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.tab-btn:hover {
+    color: var(--text-color);
+    background: rgba(255,255,255,0.03);
+}
+
+.tab-btn.active {
+    color: #fff;
+    background: var(--accent);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.chart-container {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid var(--card-border);
+}
+
+/* Static Gallery */
+.static-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.static-img-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.static-img-card h6 {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+}
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+}
+
+/* Simulator Form */
+.simulator-card {
+    margin-top: 1.5rem;
+}
+
+.card-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    padding: 0.6rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+}
+
+.range-slider {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+    transition: var(--transition);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+    background: var(--accent-hover);
+    transform: scale(1.15);
+}
+
+/* Prediction Result Area */
+.prediction-result {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.pred-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.pred-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.pred-value.Bajo { color: var(--success); }
+.pred-value.Medio { color: var(--warning); }
+.pred-value.Alto { color: var(--danger); }
+
+.progress-bar-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 9999px;
+    height: 8px;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 9999px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+}
+
+.pred-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Footer */
+.app-footer {
+    border-top: 1px solid var(--card-border);
+    padding-top: 1.5rem;
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Markdown Report Styling */
+.markdown-report-container {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 1.75rem;
+    border: 1px solid var(--card-border);
+    max-height: 600px;
+    overflow-y: auto;
+    font-family: inherit;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.markdown-report-container h1, 
+.markdown-report-container h2, 
+.markdown-report-container h3, 
+.markdown-report-container h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.markdown-report-container h1 { 
+    font-size: 1.6rem; 
+    border-bottom: 1px solid var(--card-border); 
+    padding-bottom: 0.5rem; 
+    margin-top: 0.5rem;
+}
+
+.markdown-report-container h2 { font-size: 1.35rem; }
+.markdown-report-container h3 { font-size: 1.15rem; }
+.markdown-report-container h4 { font-size: 1.05rem; }
+
+.markdown-report-container p {
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+.markdown-report-container ul, 
+.markdown-report-container ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-muted);
+}
+
+.markdown-report-container li {
+    margin-bottom: 0.5rem;
+}
+
+.markdown-report-container hr {
+    border: 0;
+    border-top: 1px solid var(--card-border);
+    margin: 1.5rem 0;
+}
+
+.markdown-report-container strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* Q&A Container Styles */
+.qna-container {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 1.75rem;
+    border: 1px solid var(--card-border);
+    max-height: 600px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.qna-item {
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 1.25rem;
+}
+
+.qna-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.qna-question {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.6rem;
+}
+
+.qna-answer {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+
+
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="badge">Probabilidad y Estadistica</span>
+                <h1>Monitoreo de Riesgo Académico</h1>
+                <p class="subtitle">Análisis Predictivo y Storytelling de Retención sobre 800,000 estudiantes</p>
+            </div>
+            <div class="header-action">
+                <button id="theme-toggle" class="btn btn-secondary">Cambiar Tema</button>
+            </div>
+        </header>
+
+        <!-- KPI Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card" id="kpi-total">
+                <div class="kpi-icon" style="font-size: 1rem; font-weight: bold; color: var(--accent);">REG</div>
+                <div class="kpi-info">
+                    <h3>800,000</h3>
+                    <p>Total Alumnos Evaluados</p>
+                </div>
+            </div>
+            <div class="kpi-card danger" id="kpi-risk">
+                <div class="kpi-icon" style="font-size: 1rem; font-weight: bold; color: var(--danger);">RISK</div>
+                <div class="kpi-info">
+                    <h3>10.37%</h3>
+                    <p>En Riesgo Académico Alto</p>
+                </div>
+            </div>
+            <div class="kpi-card warning" id="kpi-attendance">
+                <div class="kpi-icon" style="font-size: 1rem; font-weight: bold; color: var(--warning);">ATTN</div>
+                <div class="kpi-info">
+                    <h3>78.4%</h3>
+                    <p>Asistencia Promedio Global</p>
+                </div>
+            </div>
+            <div class="kpi-card success" id="kpi-modality">
+                <div class="kpi-icon" style="font-size: 1rem; font-weight: bold; color: var(--success);">MOD</div>
+                <div class="kpi-info">
+                    <h3>Presencial</h3>
+                    <p>Modalidad con Mayor Retención</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Left Column: Storytelling -->
+            <section class="story-section">
+                <div class="card glass-card">
+                    <h2 class="section-title">Storytelling con Datos</h2>
+
+                    <!-- Story selector -->
+                    <div class="story-selector-container" style="margin-bottom: 1.25rem;">
+                        <label for="story-select" style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 500;">Seleccionar Analisis:</label>
+                        <select id="story-select" class="form-control" style="background: rgba(0, 0, 0, 0.25); border-color: var(--card-border); color: var(--text-color);">
+                            <option value="story1" selected>Historia 1: Modalidad y Retencion</option>
+                            <option value="story2">Historia 2: Brecha del Estudiante Trabajador</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Story 1 Group -->
+                    <div id="story-group-1" class="story-group">
+                        <div class="story-node active" id="story1-node-1">
+                            <div class="node-number">1</div>
+                            <div class="node-body">
+                                <h4>¿Qué problema estamos intentando resolver?</h4>
+                                <p>Queremos anticiparnos al fracaso escolar y la deserción. Buscamos identificar qué factores determinan que un estudiante caiga en <strong>riesgo académico alto</strong> para poder realizar tutorías proactivas y focalizar el presupuesto de retención estudiantil de manera óptima.</p>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story1-node-2">
+                            <div class="node-number">2</div>
+                            <div class="node-body">
+                                <h4>¿Qué patrón importante apareció?</h4>
+                                <p><strong>La modalidad de estudio define el nivel de riesgo.</strong></p>
+                                <ul>
+                                    <li>En clases <strong>Presenciales</strong>, solo el <strong>5.44%</strong> presenta riesgo alto.</li>
+                                    <li>En clases <strong>Virtuales</strong> e <strong>Híbridas</strong>, el riesgo alto asciende a **~12.9%** (¡más del doble!).</li>
+                                    <li><strong>El 82.44% de todos los alumnos en riesgo académico alto cursan bajo modalidades virtuales o híbridas.</strong></li>
+                                    <li>La variable conductual determinante es la <strong>asistencia</strong>, que cae a <strong>~60.5%</strong> para el grupo de riesgo alto en la virtualidad.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story1-node-3">
+                            <div class="node-number">3</div>
+                            <div class="node-body">
+                                <h4>¿Qué gráfico o métrica respalda el hallazgo?</h4>
+                                <p>Nuestros gráficos muestran una correlación lineal directa entre asistencia y nota final (r = 0.22), además del claro desplome de la asistencia de los alumnos virtuales con riesgo alto. Las horas de estudio declaradas y el trabajo no muestran influencia estadística.</p>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story1-node-4">
+                            <div class="node-number">4</div>
+                            <div class="node-body">
+                                <h4>¿Por qué importa?</h4>
+                                <p>Demuestra que el riesgo académico en educación virtual/híbrida no se debe a que el alumno trabaje o no estudie lo suficiente (las horas de estudio son idénticas en todos los niveles de riesgo: ~9.2 hrs), sino a un <strong>desenganche de asistencia y desconexión sistemática</strong> en el entorno virtual.</p>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story1-node-5">
+                            <div class="node-number">5</div>
+                            <div class="node-body">
+                                <h4>¿Qué recomendamos hacer ahora?</h4>
+                                <div class="recs-grid">
+                                    <div class="rec-item">
+                                        <h5>SATA (Sistema de Alertas Tempranas)</h5>
+                                        <p>Gatillar alertas automáticas al tutor si el alumno en modalidad virtual cae abajo de 75% de asistencia.</p>
+                                    </div>
+                                    <div class="rec-item">
+                                        <h5>Rediseño Virtual</h5>
+                                        <p>Implementar dinámicas activas de participación obligatoria en clases sincrónicas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Story 2 Group -->
+                    <div id="story-group-2" class="story-group" style="display: none;">
+                        <div class="story-node" id="story2-node-1">
+                            <div class="node-number">1</div>
+                            <div class="node-body">
+                                <h4>¿Qué problema estamos intentando resolver?</h4>
+                                <p>Mitigar la brecha de calificaciones y el riesgo de bajo rendimiento en el segmento de estudiantes que trabajan, quienes promedian notas finales inferiores y muestran mayor variabilidad en sus resultados académicos.</p>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story2-node-2">
+                            <div class="node-number">2</div>
+                            <div class="node-body">
+                                <h4>¿Qué patrón importante apareció?</h4>
+                                <p><strong>El estatus laboral define el promedio de notas.</strong></p>
+                                <ul>
+                                    <li>Los estudiantes que <strong>no trabajan</strong> promedian <strong>96.32</strong> de nota final con una variabilidad baja (desviación de 5.32).</li>
+                                    <li>Los estudiantes que <strong>sí trabajan</strong> promedian <strong>89.37</strong> con una variabilidad mucho mayor (desviación de 7.99).</li>
+                                    <li>Esto representa una brecha de rendimiento directa de <strong>6.95 puntos porcentuales</strong> para el grupo de estudiantes laboralmente activos.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story2-node-3">
+                            <div class="node-number">3</div>
+                            <div class="node-body">
+                                <h4>¿Qué gráfico o métrica respalda el hallazgo?</h4>
+                                <p>El diagrama de cajas comparativo (Boxplot) por estado laboral, el cual muestra el desplazamiento hacia abajo de los rangos de notas y la mayor dispersión en las calificaciones de los estudiantes que trabajan.</p>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story2-node-4">
+                            <div class="node-number">4</div>
+                            <div class="node-body">
+                                <h4>¿Por qué importa?</h4>
+                                <p>Evidencia que la doble jornada laboral y académica erosiona el promedio acumulado de calificaciones del estudiante, impactando su permanencia y opciones de becas, a pesar de reportar horas semanales de estudio equivalentes al resto.</p>
+                            </div>
+                        </div>
+
+                        <div class="story-node" id="story2-node-5">
+                            <div class="node-number">5</div>
+                            <div class="node-body">
+                                <h4>¿Qué recomendamos hacer ahora?</h4>
+                                <div class="recs-grid">
+                                    <div class="rec-item">
+                                        <h5>Flexibilidad en Fechas</h5>
+                                        <p>Implementar una política de gracia automática de 48 horas adicionales en entregas para estudiantes que trabajan.</p>
+                                    </div>
+                                    <div class="rec-item">
+                                        <h5>Canales Asíncronos</h5>
+                                        <p>Facilitar el acceso a tutorías asíncronas los fines de semana y grabaciones obligatorias de las clases síncronas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Visualizations & Simulator -->
+            <section class="visuals-section">
+                <!-- Tabs for Visualizations -->
+                <div class="card glass-card">
+                    <div class="tab-header">
+                        <button class="tab-btn active" data-tab="dynamic">Gráficos Interactivos</button>
+                        <button class="tab-btn" data-tab="static">Gráficas de Análisis (Matplotlib)</button>
+                        <button class="tab-btn" data-tab="report">Reporte Ejecutivo (Markdown)</button>
+                        <button class="tab-btn" data-tab="qna">Preguntas de Analisis</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="tab-dynamic">
+                        <div class="chart-container">
+                            <canvas id="modalityChart"></canvas>
+                        </div>
+                        <div class="chart-container" style="margin-top: 20px;">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-static">
+                        <div class="static-gallery">
+                            <div class="static-img-card">
+                                <h6>Riesgo por Modalidad</h6>
+                                <img src="../static/img/riesgo_por_modalidad.png" alt="Riesgo por Modalidad" class="img-responsive">
+                            </div>
+                            <div class="static-img-card">
+                                <h6>Asistencia por Riesgo y Modalidad</h6>
+                                <img src="../static/img/asistencia_riesgo_modalidad.png" alt="Asistencia y Riesgo" class="img-responsive">
+                            </div>
+                            <div class="static-img-card">
+                                <h6>Matriz de Correlación</h6>
+                                <img src="../static/img/matriz_correlacion.png" alt="Matriz Correlación" class="img-responsive">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-report">
+                        <div class="markdown-report-container" id="markdown-report-content">
+                            <h1>Reporte de Storytelling de Datos: Retencion y Riesgo Academico</h1>
+                            <p><strong>Oficina de Ingenieria de Datos y Retencion Estudiantil</strong></p>
+                            <p>En base al analisis del conjunto de datos institucional de 800,000 registros de estudiantes (ulead_visualizacion_800k.csv), se presenta este reporte y la correspondiente aplicacion web interactiva para identificar patrones y guiar las decisiones de retencion academica.</p>
+                            <hr>
+                            <h3>1. ¿Que problema estamos intentando resolver?</h3>
+                            <p>El objetivo es identificar los factores criticos que determinan que un estudiante sea clasificado en Riesgo Academico Alto. Con este entendimiento, la institucion puede optimizar el despliegue de recursos de tutoria y apoyo academico de manera proactiva, previniendo la reprobacion y la desercion escolar.</p>
+                            <hr>
+                            <h3>2. ¿Que patron importante aparecio?</h3>
+                            <p>El analisis de los datos revela que la modalidad de estudio es la variable mas determinante del riesgo academico:</p>
+                            <ul>
+                                <li><strong>Riesgo por Modalidad:</strong>
+                                    <ul>
+                                        <li>Presencial: El riesgo academico alto es de solo el 5.44%.</li>
+                                        <li>Virtual: El riesgo academico alto asciende al 12.93% (un incremento de mas del doble).</li>
+                                        <li>Hibrida: El riesgo academico alto se situa en el 12.75%.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Concentracion del Riesgo:</strong> El 82.44% de todos los alumnos de la institucion clasificados en riesgo alto cursan bajo modalidades virtuales o hibridas.</li>
+                                <li><strong>Variable de Comportamiento Critica:</strong> La asistencia promedio de los alumnos en riesgo alto en las modalidades virtual e hibrida se desploma a ~60.5%, en contraste con el ~85.0% observado en los alumnos de bajo riesgo.</li>
+                                <li><strong>Factores no Influyentes:</strong> El estatus laboral (trabajar o no) y las horas de estudio declaradas por semana no muestran diferencias estadisticamente significativas entre los distintos niveles de riesgo.</li>
+                            </ul>
+                            <hr>
+                            <h3>3. ¿Que grafico o metrica respalda el hallazgo?</h3>
+                            <ul>
+                                <li><strong>Distribucion de Riesgo por Modalidad:</strong>
+                                    <ul>
+                                        <li>Presencial: 72.90% Bajo, 21.66% Medio, 5.44% Alto</li>
+                                        <li>Hibrida: 50.96% Bajo, 36.29% Medio, 12.75% Alto</li>
+                                        <li>Virtual: 50.69% Bajo, 36.38% Medio, 12.93% Alto</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Matriz de Correlacion:</strong>
+                                    <ul>
+                                        <li>La entrega de tareas es la variable con mayor correlacion conductual positiva con la nota final (coeficiente de 0.31).</li>
+                                        <li>La asistencia muestra una correlacion directa positiva con la nota final (coeficiente de 0.22).</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <hr>
+                            <h3>4. ¿Por que importa?</h3>
+                            <p>Los resultados modifican la hipotesis de la institucion respecto a la educacion en linea. El bajo rendimiento en entornos virtuales o hibridos no se debe a la falta de tiempo de estudio o al empleo del estudiante, sino a la falta de compromiso y desenganche de asistencia en la virtualidad. Esto exige centrar las estrategias de retencion en el control de asistencia y alertas tempranas en lugar de simplificar el contenido academico.</p>
+                            <hr>
+                            <h3>5. ¿Que recomendamos hacer ahora?</h3>
+                            <p>Se sugieren tres acciones inmediatas:</p>
+                            <ol>
+                                <li><strong>Implementar el Sistema de Alertas Tempranas de Asistencia (SATA):</strong> Activar notificaciones automaticas cuando un estudiante de modalidad virtual o hibrida registre una asistencia inferior al 75% en las primeras tres semanas del ciclo.</li>
+                                <li><strong>Rediseño de Clases Virtuales e Hibridas:</strong> Incorporar actividades síncronas que requieran participacion y verificacion activa del estudiante en la plataforma.</li>
+                                <li><strong>Focalizacion Presupuestaria:</strong> Asignar el 80% de los recursos de tutoria a estudiantes en modalidades no presenciales, dado que representan el 82.44% de la poblacion en riesgo.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-qna">
+                        <div class="qna-container">
+                            <div class="qna-item">
+                                <h4 class="qna-question">1. ¿Como se distribuye la nota final?</h4>
+                                <p class="qna-answer">El promedio general es de 93.20 con una desviacion estandar de 7.50. El valor minimo registrado es 55. La distribucion esta sesgada negativamente hacia calificaciones altas, con la mitad de los estudiantes (mediana) en 95 y el 25% superior alcanzando la nota maxima de 100.</p>
+                                <img src="../static/img/q1_distribucion.png" alt="Distribucion de la nota final" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">2. ¿Hay diferencias de nota final entre modalidades?</h4>
+                                <p class="qna-answer">Las diferencias promedio son muy leves: Hibrida (93.55), Presencial (93.30) y Virtual (92.74). Sin embargo, la modalidad Virtual presenta la menor nota promedio y la mayor dispersion (desviacion estandar de 7.72), indicando que concentra calificaciones mas heterogeneas y extremas.</p>
+                                <img src="../static/img/q2_modalidad.png" alt="Nota final por modalidad" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">3. ¿Que carrera tiene mayor promedio de nota final?</h4>
+                                <p class="qna-answer">Ciberseguridad registra el promedio mas alto con 93.23, seguida de cerca por Administracion con 93.20 y Data Science con 93.19. Las diferencias promedios entre todas las carreras del dataset no superan los 0.06 puntos.</p>
+                                <img src="../static/img/q3_carrera_promedio.png" alt="Promedio de nota final por carrera" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">4. ¿Que carrera tiene mayor variabilidad en las notas?</h4>
+                                <p class="qna-answer">La carrera de Finanzas presenta la mayor variabilidad con una desviacion estandar de 7.52, seguida por Data Science con 7.51. Ciberseguridad cuenta con la menor variabilidad con una desviacion estandar de 7.49.</p>
+                                <img src="../static/img/q4_carrera_variabilidad.png" alt="Variabilidad de notas por carrera" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">5. ¿Existe relacion entre horas de estudio y nota final?</h4>
+                                <p class="qna-answer">Si, existe una relacion lineal positiva moderada-fuerte, con un coeficiente de correlacion de 0.5960. A mayores horas de estudio semanales, mayor es la calificacion final obtenida.</p>
+                                <img src="../static/img/q5_horas_estudio.png" alt="Horas de estudio vs nota final" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">6. ¿Existe relacion entre asistencia y nota final?</h4>
+                                <p class="qna-answer">Si, existe una relacion lineal positiva debil con un coeficiente de 0.2154. Aunque su asociacion directa es debil, es la variable clave que define el desenganche y riesgo de reprobacion de los alumnos en modalidades no presenciales.</p>
+                                <img src="../static/img/q6_asistencia.png" alt="Asistencia vs nota final" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">7. ¿Los estudiantes que trabajan tienen menor rendimiento?</h4>
+                                <p class="qna-answer">Si. Los estudiantes que no trabajan promedian 96.32 en su nota final con una desviacion de 5.32, mientras que los estudiantes que si trabajan promedian 89.37 con una desviacion de 7.99. Representa una brecha de rendimiento de casi 7 puntos porcentuales.</p>
+                                <img src="../static/img/q7_trabaja.png" alt="Rendimiento estudiantes que trabajan" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">8. ¿Que campus concentra mayor riesgo academico?</h4>
+                                <p class="qna-answer">El campus Virtual concentra tanto el mayor porcentaje de alumnos en riesgo alto (12.93%) como el mayor volumen absoluto (34,410 estudiantes en riesgo alto). Los campus fisicos promedian uniformemente un 9.0% de riesgo alto.</p>
+                                <img src="../static/img/q8_campus_riesgo.png" alt="Riesgo academico por campus" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">9. ¿El uso de plataforma se asocia con mejores notas?</h4>
+                                <p class="qna-answer">La relacion lineal directa es sumamente debil (coeficiente de correlacion de 0.0616). Sin embargo, al segmentar por cuartiles de uso, el promedio de notas se incrementa levemente, pasando de 92.57 en el cuartil mas bajo a 93.78 en el de mayor uso.</p>
+                                <img src="../static/img/q9_plataforma.png" alt="Uso de plataforma vs nota final" class="img-responsive" style="max-width: 90%; margin-top: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                            </div>
+                            <div class="qna-item">
+                                <h4 class="qna-question">10. ¿Que recomendacion harian a ULEAD con base en los datos?</h4>
+                                <p class="qna-answer">Se recomienda: 1) Activar alertas automaticas (SATA) al tutor ante caidas de asistencia abajo del 75% en virtual/hibrido. 2) Priorizar presupuesto de tutorias en el campus Virtual e Hibrido (representan el 82.44% del riesgo alto institucional). 3) Implementar entregas flexibles y tutorias asincronas para el segmento de estudiantes que trabajan, mitigando la brecha de rendimiento de 7 puntos.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-report">
+
+                </div>
+
+                <!-- Simulator Card -->
+                <div class="card glass-card simulator-card">
+                    <h3 class="card-title">Simulador de Riesgo Académico</h3>
+                    <p class="card-description">Modifica los parámetros para predecir en tiempo real el riesgo de un alumno.</p>
+                    
+                    <form id="simulator-form">
+                        <div class="form-group">
+                            <label for="input-modalidad">Modalidad de Estudio</label>
+                            <select id="input-modalidad" class="form-control">
+                                <option value="Virtual" selected>Virtual</option>
+                                <option value="Hibrida">Híbrida</option>
+                                <option value="Presencial">Presencial</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-asistencia">Porcentaje de Asistencia: <span id="val-asistencia">80</span>%</label>
+                            <input type="range" id="input-asistencia" min="0" max="100" value="80" class="range-slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-tareas">Tareas Entregadas: <span id="val-tareas">8</span>/12</label>
+                            <input type="range" id="input-tareas" min="0" max="12" value="8" class="range-slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-horas">Horas de Estudio Semanales: <span id="val-horas">9.0</span> hrs</label>
+                            <input type="range" id="input-horas" min="0" max="30" step="0.5" value="9.0" class="range-slider">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-participacion">Porcentaje de Participación: <span id="val-participacion">70</span>%</label>
+                            <input type="range" id="input-participacion" min="0" max="100" value="70" class="range-slider">
+                        </div>
+                    </form>
+
+                    <!-- Prediction Result Display -->
+                    <div class="prediction-result" id="prediction-box">
+                        <div class="pred-label">Predicción de Riesgo:</div>
+                        <div class="pred-value" id="risk-result">-</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="risk-confidence"></div>
+                        </div>
+                        <p class="pred-hint" id="risk-hint">Ajusta los valores para calcular la probabilidad.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Universidad - Oficina de Ingeniería de Datos y Retención.</p>
+        </footer>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Hardcoded statistics from the 800,000 records dataset for offline client-side support
+    const PRECALCULATED_STATS = {
+        total_students: 800000,
+        overall_risk: {
+            'Bajo': 58.21,
+            'Medio': 31.43,
+            'Alto': 10.37
+        },
+        modality_risk: {
+            'Hibrida': { 'Alto': 12.75, 'Bajo': 50.96, 'Medio': 36.29 },
+            'Presencial': { 'Alto': 5.44, 'Bajo': 72.90, 'Medio': 21.66 },
+            'Virtual': { 'Alto': 12.93, 'Bajo': 50.69, 'Medio': 36.38 }
+        },
+        attendance_risk: {
+            'Hibrida': { 'Alto': 60.69, 'Bajo': 85.00, 'Medio': 68.57 },
+            'Presencial': { 'Alto': 73.91, 'Bajo': 88.20, 'Medio': 69.87 },
+            'Virtual': { 'Alto': 60.50, 'Bajo': 85.04, 'Medio': 68.61 }
+        }
+    };
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+    });
+    
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-theme');
+    }
+
+    // Tab Switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
+    });
+
+    // Story Node interactive highlight
+    const storyNodes = document.querySelectorAll('.story-node');
+    storyNodes.forEach(node => {
+        node.addEventListener('click', () => {
+            storyNodes.forEach(n => n.classList.remove('active'));
+            node.classList.add('active');
+        });
+    });
+
+    // Story Selector Event Handler
+    const storySelect = document.getElementById('story-select');
+    const storyGroup1 = document.getElementById('story-group-1');
+    const storyGroup2 = document.getElementById('story-group-2');
+
+    if (storySelect) {
+        storySelect.addEventListener('change', (e) => {
+            if (e.target.value === 'story1') {
+                storyGroup1.style.display = 'block';
+                storyGroup2.style.display = 'none';
+                storyNodes.forEach(n => n.classList.remove('active'));
+                const firstNode = document.getElementById('story1-node-1');
+                if (firstNode) firstNode.classList.add('active');
+            } else {
+                storyGroup1.style.display = 'none';
+                storyGroup2.style.display = 'block';
+                storyNodes.forEach(n => n.classList.remove('active'));
+                const firstNode = document.getElementById('story2-node-1');
+                if (firstNode) firstNode.classList.add('active');
+            }
+        });
+    }
+
+    // Range input sliders elements
+    const inputs = {
+        modalidad: document.getElementById('input-modalidad'),
+        asistencia: document.getElementById('input-asistencia'),
+        tareas: document.getElementById('input-tareas'),
+        horas: document.getElementById('input-horas'),
+        participacion: document.getElementById('input-participacion')
+    };
+
+    const valIndicators = {
+        asistencia: document.getElementById('val-asistencia'),
+        tareas: document.getElementById('val-tareas'),
+        horas: document.getElementById('val-horas'),
+        participacion: document.getElementById('val-participacion')
+    };
+
+    // Bind inputs to updates
+    Object.keys(valIndicators).forEach(key => {
+        inputs[key].addEventListener('input', (e) => {
+            valIndicators[key].textContent = e.target.value;
+            triggerPrediction();
+        });
+    });
+    inputs.modalidad.addEventListener('change', triggerPrediction);
+
+    // Dynamic UI risk predictor renderer helper
+    function updatePredictionUI(pred, confidence) {
+        const riskResult = document.getElementById('risk-result');
+        const progressBar = document.getElementById('risk-confidence');
+        const riskHint = document.getElementById('risk-hint');
+        
+        riskResult.className = `pred-value ${pred}`;
+        riskResult.textContent = pred;
+        
+        let barColor = '#10b981'; // Green (Bajo)
+        let hintText = '';
+        
+        if (pred === 'Alto') {
+            barColor = '#ef4444'; // Red
+            hintText = `Atencion: Alta probabilidad de reprobacion (${confidence}%). Se requiere tutoria obligatoria inmediata.`;
+        } else if (pred === 'Medio') {
+            barColor = '#f59e0b'; // Orange
+            hintText = `Riesgo moderado (${confidence}%). Mantener monitoreo y enviar recordatorios de entrega de tareas.`;
+        } else {
+            hintText = `Riesgo academico bajo (${confidence}%). Estudiante con buen desempeno general.`;
+        }
+        
+        progressBar.style.backgroundColor = barColor;
+        progressBar.style.width = `${confidence}%`;
+        riskHint.textContent = hintText;
+    }
+
+    // Heuristic client-side prediction engine (Fallback)
+    function runClientSidePrediction() {
+        const modalidad = inputs.modalidad.value;
+        const asistencia = parseFloat(inputs.asistencia.value);
+        const tareas = parseInt(inputs.tareas.value);
+        
+        let prediction = 'Bajo';
+        let confidence = 88.0;
+        
+        if (asistencia < 62 || ((modalidad === 'Virtual' || modalidad === 'Hibrida') && asistencia < 72)) {
+            prediction = 'Alto';
+            confidence = 85.0;
+        } else if (asistencia < 75 || tareas < 7) {
+            prediction = 'Medio';
+            confidence = 75.0;
+        } else {
+            prediction = 'Bajo';
+            confidence = 88.0;
+        }
+        
+        updatePredictionUI(prediction, confidence);
+    }
+
+    // Live Prediction Debouncer
+    let debounceTimer;
+    function triggerPrediction() {
+        clearTimeout(debounceTimer);
+        
+        // If opened as a local file, predict offline immediately
+        if (window.location.protocol === 'file:') {
+            runClientSidePrediction();
+            return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+            const payload = {
+                modalidad: inputs.modalidad.value,
+                asistencia: parseFloat(inputs.asistencia.value),
+                tareas_entregadas: parseInt(inputs.tareas.value),
+                horas_estudio: parseFloat(inputs.horas.value),
+                participacion: parseFloat(inputs.participacion.value),
+                uso_plataforma: 40.0
+            };
+
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error('API offline');
+                const result = await response.json();
+                
+                const pred = result.prediction;
+                const confidence = result.probabilities[pred];
+                updatePredictionUI(pred, confidence);
+            } catch (err) {
+                // If API fails, fallback to local javascript rule-based engine
+                runClientSidePrediction();
+            }
+        }, 100);
+    }
+
+    // Chart.js graphics renderer
+    function renderCharts(statsData) {
+        // Modality Risk Chart
+        const modCtx = document.getElementById('modalityChart').getContext('2d');
+        const modalities = Object.keys(statsData.modality_risk);
+        
+        const highData = modalities.map(m => statsData.modality_risk[m]['Alto']);
+        const medData = modalities.map(m => statsData.modality_risk[m]['Medio']);
+        const lowData = modalities.map(m => statsData.modality_risk[m]['Bajo']);
+        
+        new Chart(modCtx, {
+            type: 'bar',
+            data: {
+                labels: modalities,
+                datasets: [
+                    {
+                        label: 'Riesgo Alto',
+                        data: highData,
+                        backgroundColor: '#ef4444'
+                    },
+                    {
+                        label: 'Riesgo Medio',
+                        data: medData,
+                        backgroundColor: '#f59e0b'
+                    },
+                    {
+                        label: 'Riesgo Bajo',
+                        data: lowData,
+                        backgroundColor: '#10b981'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Distribucion de Riesgo Academico por Modalidad (%)',
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+                        font: { size: 14, weight: 'bold' }
+                    },
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, max: 100 }
+                }
+            }
+        });
+
+        // Attendance Risk Chart
+        const attCtx = document.getElementById('attendanceChart').getContext('2d');
+        const attHigh = modalities.map(m => statsData.attendance_risk[m]['Alto']);
+        const attMed = modalities.map(m => statsData.attendance_risk[m]['Medio']);
+        const attLow = modalities.map(m => statsData.attendance_risk[m]['Bajo']);
+
+        new Chart(attCtx, {
+            type: 'bar',
+            data: {
+                labels: modalities,
+                datasets: [
+                    {
+                        label: 'Asistencia Riesgo Alto',
+                        data: attHigh,
+                        backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Asistencia Riesgo Medio',
+                        data: attMed,
+                        backgroundColor: 'rgba(245, 158, 11, 0.75)',
+                        borderColor: '#f59e0b',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Asistencia Riesgo Bajo',
+                        data: attLow,
+                        backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                        borderColor: '#10b981',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Asistencia Promedio (%) por Nivel de Riesgo y Modalidad',
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+                        font: { size: 14, weight: 'bold' }
+                    },
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { min: 50, max: 100 }
+                }
+            }
+        });
+    }
+
+    // Load statistics
+    async function loadStats() {
+        if (window.location.protocol === 'file:') {
+            renderCharts(PRECALCULATED_STATS);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/stats');
+            if (!response.ok) throw new Error('Stats offline');
+            const data = await response.json();
+            renderCharts(data);
+        } catch (err) {
+            // Fallback to precalculated offline stats
+            renderCharts(PRECALCULATED_STATS);
+        }
+    }
+
+    // Initial load calls
+    loadStats();
+    triggerPrediction();
+});
+
+</script>
+</body>
+</html>

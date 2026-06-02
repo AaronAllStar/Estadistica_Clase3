@@ -1,0 +1,12 @@
+estudiantes.db
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+inspect_csv.py
+analyze.py
+analyze_modality.py
+generate_notebook.py
+run_plots.py
+generate_qna_plots.py
+answer_questions.py
+inline_assets.py
